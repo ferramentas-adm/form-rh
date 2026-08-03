@@ -86,22 +86,29 @@ export default function TalentoForm() {
         portfolioUrl = pub.publicUrl;
       }
 
-      const { error: insertError } = await supabase.from("banco_talentos").insert({
+      const registro = {
         nome: form.nome.trim(),
         telefone: form.telefone,
         email: form.email,
+        linkedin: form.linkedin || null,
         area_interesse: form.area_interesse || null,
         cargo_interesse: vagaTitulo || null, // veio de vaga específica -> já mostra o cargo certo no card
         experiencia: form.trajetoria || null,
         portfolio_url: portfolioUrl,
-        origem: [
-          vagaTitulo ? `Candidatura à vaga: ${vagaTitulo}` : "Site",
-          form.linkedin ? `LinkedIn: ${form.linkedin}` : null,
-        ].filter(Boolean).join(" · "),
+        origem: vagaTitulo ? `Candidatura à vaga: ${vagaTitulo}` : "Site",
         vaga_id: vagaId || null,
         status: "Disponível",
-      });
+      };
+
+      const { error: insertError } = await supabase.from("banco_talentos").insert(registro);
       if (insertError) throw insertError;
+
+      // Espelha na planilha "Banco de Talentos" — não bloqueia o cadastro se falhar.
+      fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/banco-talentos-notify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...registro, created_at: new Date().toISOString() }),
+      }).catch(() => {});
 
       setDone(true);
     } catch (err) {

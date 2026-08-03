@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx vercel *)",
+      "Bash(npm run *)",
+      "Bash(powershell -Command \"Compress-Archive -Path * -DestinationPath ../dist.zip -Force\")",
+      "Bash(zip -r ../dist.zip .)",
+      "Bash(git -C \"c:\\\\Users\\\\grupo\\\\Desktop\\\\form-vaga-gs\" status)",
+      "Bash(git ls-remote *)",
+      "Bash(echo \"exit:$?\")",
+      "Bash(git init *)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\grupo\\Desktop\\form-vaga-gs\\dist"
+    ]
+  }
+}

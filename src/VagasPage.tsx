@@ -64,7 +64,7 @@ export default function VagasPage() {
                   </p>
                 </div>
                 <a
-                  href={`/talentos.html?area=${encodeURIComponent(v.setor || "")}&vaga=${encodeURIComponent(v.titulo)}`}
+                  href={`/talentos.html?area=${encodeURIComponent(v.setor || "")}&vaga_id=${encodeURIComponent(v.id)}&vaga_titulo=${encodeURIComponent(v.titulo)}`}
                   className="shrink-0 bg-brand text-black text-sm font-semibold rounded-lg px-4 py-2 hover:brightness-110 transition"
                 >
                   Candidatar-se

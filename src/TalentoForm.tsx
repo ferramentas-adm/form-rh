@@ -36,7 +36,9 @@ function readQueryDefaults(): Partial<FormState> {
 
 export default function TalentoForm() {
   const [form, setForm] = useState<FormState>({ ...emptyForm, ...readQueryDefaults() });
-  const vagaOrigem = new URLSearchParams(window.location.search).get("vaga");
+  const params = new URLSearchParams(window.location.search);
+  const vagaId = params.get("vaga_id");
+  const vagaTitulo = params.get("vaga_titulo") || params.get("vaga"); // "vaga" = link antigo, só texto
   const [arquivo, setArquivo] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
@@ -89,12 +91,14 @@ export default function TalentoForm() {
         telefone: form.telefone,
         email: form.email,
         area_interesse: form.area_interesse || null,
+        cargo_interesse: vagaTitulo || null, // veio de vaga específica -> já mostra o cargo certo no card
         experiencia: form.trajetoria || null,
         portfolio_url: portfolioUrl,
         origem: [
-          vagaOrigem ? `Candidatura à vaga: ${vagaOrigem}` : "Site",
+          vagaTitulo ? `Candidatura à vaga: ${vagaTitulo}` : "Site",
           form.linkedin ? `LinkedIn: ${form.linkedin}` : null,
         ].filter(Boolean).join(" · "),
+        vaga_id: vagaId || null,
         status: "Disponível",
       });
       if (insertError) throw insertError;

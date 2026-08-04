@@ -76,7 +76,12 @@ export default function TalentoForm() {
 
       if (arquivo) {
         const ext = arquivo.name.split(".").pop() || "pdf";
-        const path = `${crypto.randomUUID()}.${ext}`;
+        // crypto.randomUUID só existe em contexto seguro (HTTPS/localhost) — o site
+        // pode rodar em HTTP puro (IP sem certificado), então precisa de fallback.
+        const uuid = crypto.randomUUID
+          ? crypto.randomUUID()
+          : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        const path = `${uuid}.${ext}`;
         const { error: uploadError } = await supabase.storage
           .from("curriculos-banco-talentos")
           .upload(path, arquivo, { contentType: arquivo.type || undefined });

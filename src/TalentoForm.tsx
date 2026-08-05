@@ -14,10 +14,18 @@ const AREAS = [
 
 const MAX_FILE_MB = 5;
 
+// Mesma lista de UFs usada no filtro do Banco de Talentos na intranet.
+const UFS = [
+  "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG",
+  "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO",
+];
+
 type FormState = {
   nome: string;
   telefone: string;
   email: string;
+  estado: string;
+  cidade: string;
   linkedin: string;
   trajetoria: string;
   area_interesse: string;
@@ -25,7 +33,7 @@ type FormState = {
 };
 
 const emptyForm: FormState = {
-  nome: "", telefone: "", email: "", linkedin: "", trajetoria: "", area_interesse: "", website: "",
+  nome: "", telefone: "", email: "", estado: "", cidade: "", linkedin: "", trajetoria: "", area_interesse: "", website: "",
 };
 
 function readQueryDefaults(): Partial<FormState> {
@@ -65,8 +73,8 @@ export default function TalentoForm() {
     setError(null);
 
     if (form.website) return; // honeypot — bot, finge sucesso
-    if (!form.nome.trim() || !form.telefone || !form.email) {
-      setError("Nome, telefone e e-mail são obrigatórios.");
+    if (!form.nome.trim() || !form.telefone || !form.email || !form.estado || !form.cidade.trim()) {
+      setError("Nome, telefone, e-mail, estado e cidade são obrigatórios.");
       return;
     }
 
@@ -95,6 +103,8 @@ export default function TalentoForm() {
         nome: form.nome.trim(),
         telefone: form.telefone,
         email: form.email,
+        estado: form.estado || null,
+        cidade: form.cidade || null,
         linkedin: form.linkedin || null,
         area_interesse: form.area_interesse || null,
         cargo_interesse: vagaTitulo || null, // veio de vaga específica -> já mostra o cargo certo no card
@@ -175,6 +185,19 @@ export default function TalentoForm() {
           </Field>
           <Field label="E-mail para contato *">
             <input type="email" required value={form.email} onChange={set("email")} className={inputClass} />
+          </Field>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Estado *">
+            <CustomSelect
+              value={form.estado}
+              onChange={(v) => setForm((f) => ({ ...f, estado: v }))}
+              options={UFS}
+            />
+          </Field>
+          <Field label="Cidade *">
+            <input required value={form.cidade} onChange={set("cidade")} className={inputClass} />
           </Field>
         </div>
 

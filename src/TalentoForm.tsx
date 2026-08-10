@@ -95,8 +95,10 @@ export default function TalentoForm() {
           .upload(path, arquivo, { contentType: arquivo.type || undefined });
         if (uploadError) throw new Error(`Falha ao enviar currículo: ${uploadError.message}`);
 
-        const { data: pub } = supabase.storage.from("curriculos-banco-talentos").getPublicUrl(path);
-        portfolioUrl = pub.publicUrl;
+        // Bucket é privado (currículo não pode ficar público na internet) -- getPublicUrl()
+        // geraria um link que sempre dá 403. Guarda só o path do arquivo; quem for exibir
+        // isso no RH gera um link assinado (createSignedUrl) autenticado, sob demanda.
+        portfolioUrl = path;
       }
 
       const registro = {

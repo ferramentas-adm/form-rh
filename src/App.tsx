@@ -55,6 +55,16 @@ export default function App() {
       setError("Preencha todos os campos, todos são obrigatórios.");
       return;
     }
+    // CPF/CNPJ com dígito faltando (ex: usuário parou de digitar no meio) não são pegos
+    // pelo "campo vazio" acima -- confere quantidade de dígitos antes de mandar pro backend.
+    if (form.cpf.replace(/\D/g, "").length !== 11) {
+      setError("CPF inválido — precisa ter 11 dígitos.");
+      return;
+    }
+    if (form.cnpj.replace(/\D/g, "").length !== 14) {
+      setError("CNPJ inválido — precisa ter 14 dígitos.");
+      return;
+    }
 
     setSubmitting(true);
     try {

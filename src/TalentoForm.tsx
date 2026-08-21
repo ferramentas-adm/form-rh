@@ -132,7 +132,11 @@ export default function TalentoForm() {
 
       setDone(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro desconhecido ao enviar.");
+      // Erro do Supabase (PostgrestError) não é instanceof Error -- é um objeto plano com
+      // .message. Sem esse fallback, a mensagem da trava de duplicata (banco) nunca
+      // aparecia pro candidato, caía sempre em "Erro desconhecido".
+      const msg = err instanceof Error ? err.message : (err as { message?: string })?.message;
+      setError(msg || "Erro desconhecido ao enviar.");
     } finally {
       setSubmitting(false);
     }

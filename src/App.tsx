@@ -1,6 +1,7 @@
 import { useState } from "react";
 import logo from "./assets/logo-grupo-silva.png";
 import { maskCpf, maskCnpj, maskTelefone } from "./masks";
+import { Eyebrow, Bullet, TipBox, SectionLabel, Field, inputClass } from "./ui";
 
 // URL da function pública que recebe esse form e grava em dh_ativacoes (fila "Aguardando RH").
 // Sem token embutido no front — endpoint é público de propósito, protegido por honeypot
@@ -112,30 +113,29 @@ export default function App() {
     <div className="min-h-screen flex items-center justify-center p-6">
       <form
         onSubmit={handleSubmit}
-        className="max-w-lg w-full bg-[#121212]/80 border border-white/10 rounded-3xl p-8 sm:p-10 space-y-5"
+        className="max-w-xl w-full bg-[#121212]/80 border border-white/10 rounded-3xl p-8 sm:p-10 space-y-6"
       >
-        <div className="space-y-3 mb-4">
+        <div className="space-y-4">
           <img src={logo} alt="Grupo Silva" className="h-10" />
-          <h1 className="text-lg font-semibold text-white">Formulário de Integração - Grupo Silva</h1>
-          <p className="text-sm text-neutral-300">
-            Parabéns! Você está a um passo de ingressar no Grupo Silva!
-          </p>
-          <p className="text-xs text-neutral-400">
-            Este formulário é essencial para darmos andamento ao seu Contrato de Prestação de
-            Serviço. Por favor, preencha todos os campos com atenção e complete as informações
-            solicitadas abaixo.
-          </p>
-          <p className="text-xs text-neutral-400">
-            Após o envio deste formulário, você receberá em seu e-mail: Seu Contrato de Trabalho
-            e a confirmação final da sua data de início.
-          </p>
-          <p className="text-sm text-white">Bem-vindo(a) ao Grupo Silva! 🐢</p>
-          <p className="text-[11px] text-neutral-500 border-t border-white/10 pt-3">
-            Ao preencher este formulário, você declara estar ciente de que seus dados serão
-            tratados pelo Grupo Silva, em conformidade com a Lei Geral de Proteção de Dados (Lei
-            nº 13.709/2018), exclusivamente para fins de recrutamento, contratação, formalização
-            contratual e cumprimento de obrigações legais relacionadas ao processo de admissão.
-          </p>
+          <div className="space-y-2">
+            <Eyebrow>Integração</Eyebrow>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white leading-tight">
+              Você está a um passo de <span className="text-brand">fazer parte do Grupo Silva</span>
+            </h1>
+            <p className="text-sm text-neutral-400">
+              Preencha os dados abaixo pra darmos andamento ao seu Contrato de Prestação de Serviço.
+            </p>
+          </div>
+
+          <ul className="flex flex-wrap gap-x-5 gap-y-1.5">
+            <Bullet>Leva uns 5 minutos</Bullet>
+            <Bullet>Contrato chega no seu e-mail</Bullet>
+            <Bullet>Dados protegidos (LGPD)</Bullet>
+          </ul>
+
+          <TipBox lead="Tenha em mãos:">
+            CPF e CNPJ da empresa, chave PIX vinculada ao CNPJ e seus dados de contato — assim você preenche tudo de uma vez.
+          </TipBox>
         </div>
 
         {/* Honeypot — invisível pra humano, só bot preenche */}
@@ -149,70 +149,73 @@ export default function App() {
           aria-hidden="true"
         />
 
-        <Field label="Disponibilidade para data de início: *">
-          <input type="date" required value={form.data_inicio_prevista} onChange={set("data_inicio_prevista")} className={inputClass} />
-        </Field>
+        <div className="space-y-4">
+          <SectionLabel>Sobre a empresa</SectionLabel>
 
-        <Field label="Nome Completo do representante legal da empresa: *">
-          <input required value={form.nome} onChange={set("nome")} className={inputClass} />
-        </Field>
+          <Field label="Nome Completo do representante legal da empresa *">
+            <input required value={form.nome} onChange={set("nome")} className={inputClass} />
+          </Field>
 
-        <Field label="CPF do representante legal da empresa: *">
-          <input required value={form.cpf} onChange={(e) => setForm((f) => ({ ...f, cpf: maskCpf(e.target.value) }))} className={inputClass} placeholder="000.000.000-00" />
-        </Field>
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="CPF do representante legal *">
+              <input required value={form.cpf} onChange={(e) => setForm((f) => ({ ...f, cpf: maskCpf(e.target.value) }))} className={inputClass} placeholder="000.000.000-00" />
+            </Field>
+            <Field label="CNPJ da empresa *">
+              <input required value={form.cnpj} onChange={(e) => setForm((f) => ({ ...f, cnpj: maskCnpj(e.target.value) }))} className={inputClass} placeholder="00.000.000/0000-00" />
+            </Field>
+          </div>
 
-        <Field label="CNPJ da empresa: *">
-          <input required value={form.cnpj} onChange={(e) => setForm((f) => ({ ...f, cnpj: maskCnpj(e.target.value) }))} className={inputClass} placeholder="00.000.000/0000-00" />
-        </Field>
+          <Field
+            label="Chave PIX *"
+            hint="Atenção: pagamentos são feitos exclusivamente na conta PJ vinculada ao CNPJ informado. Não são aceitas chaves de celular, e-mail ou qualquer outra que não seja a do CNPJ da sua empresa."
+          >
+            <input required value={form.pix} onChange={set("pix")} className={inputClass} />
+          </Field>
+        </div>
 
-        <Field label="Data de Nascimento *">
-          <input type="date" required value={form.data_nascimento} onChange={set("data_nascimento")} className={inputClass} />
-        </Field>
+        <div className="space-y-4">
+          <SectionLabel>Sobre você</SectionLabel>
 
-        <Field label="Chave PIX *">
-          <input required value={form.pix} onChange={set("pix")} className={inputClass} />
-          <p className="text-[11px] text-amber-400/80 mt-1">
-            Atenção: os pagamentos serão realizados exclusivamente na conta PJ vinculada ao CNPJ
-            da empresa informada. Não serão aceitas chaves PIX do tipo número de celular, e-mail
-            ou qualquer outra opção diferente do CNPJ. Informe apenas a chave PIX cadastrada com
-            o CNPJ da sua empresa.
-          </p>
-        </Field>
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Data de Nascimento *">
+              <input type="date" required value={form.data_nascimento} onChange={set("data_nascimento")} className={inputClass} />
+            </Field>
+            <Field label="Telefone *">
+              <input required value={form.telefone} onChange={(e) => setForm((f) => ({ ...f, telefone: maskTelefone(e.target.value) }))} className={inputClass} placeholder="(00) 00000-0000" />
+            </Field>
+          </div>
 
-        <Field label="E-mail do representante legal da empresa: *">
-          <input type="email" required value={form.email_pessoal} onChange={set("email_pessoal")} className={inputClass} />
-        </Field>
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="E-mail *">
+              <input type="email" required value={form.email_pessoal} onChange={set("email_pessoal")} className={inputClass} />
+            </Field>
+            <Field label="Instagram | LinkedIn *">
+              <input required value={form.rede_social} onChange={set("rede_social")} className={inputClass} />
+            </Field>
+          </div>
 
-        <Field label="Telefone *">
-          <input required value={form.telefone} onChange={(e) => setForm((f) => ({ ...f, telefone: maskTelefone(e.target.value) }))} className={inputClass} placeholder="(00) 00000-0000" />
-        </Field>
-
-        <Field label="Rede Social | Instagram *">
-          <input required value={form.rede_social} onChange={set("rede_social")} className={inputClass} placeholder="Instagram e LinkedIn" />
-        </Field>
+          <Field label="Disponibilidade para data de início *">
+            <input type="date" required value={form.data_inicio_prevista} onChange={set("data_inicio_prevista")} className={inputClass} />
+          </Field>
+        </div>
 
         {error && <p className="text-sm text-red-400">{error}</p>}
 
         <button
           type="submit"
           disabled={submitting}
-          className="w-full bg-brand text-black font-semibold rounded-xl py-3 hover:brightness-110 transition disabled:opacity-60"
+          className="w-full bg-brand text-black font-semibold rounded-xl py-3.5 hover:brightness-110 transition disabled:opacity-60"
         >
           {submitting ? "Enviando..." : "Enviar cadastro"}
         </button>
+
+        <p className="text-[11px] text-neutral-500 border-t border-white/10 pt-4">
+          Ao preencher este formulário, você declara estar ciente de que seus dados serão tratados
+          pelo Grupo Silva, em conformidade com a Lei Geral de Proteção de Dados (Lei nº
+          13.709/2018), exclusivamente para fins de recrutamento, contratação, formalização
+          contratual e cumprimento de obrigações legais relacionadas ao processo de admissão.
+        </p>
       </form>
     </div>
-  );
-}
-
-const inputClass =
-  "w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:ring-1 focus:ring-brand";
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <label className="block space-y-1">
-      <span className="text-xs text-neutral-400">{label}</span>
-      {children}
-    </label>
   );
 }

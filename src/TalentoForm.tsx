@@ -27,13 +27,14 @@ type FormState = {
   estado: string;
   cidade: string;
   linkedin: string;
+  instagram: string;
   trajetoria: string;
   area_interesse: string;
   website: string; // honeypot
 };
 
 const emptyForm: FormState = {
-  nome: "", telefone: "", email: "", estado: "", cidade: "", linkedin: "", trajetoria: "", area_interesse: "", website: "",
+  nome: "", telefone: "", email: "", estado: "", cidade: "", linkedin: "", instagram: "", trajetoria: "", area_interesse: "", website: "",
 };
 
 function readQueryDefaults(): Partial<FormState> {
@@ -108,6 +109,7 @@ export default function TalentoForm() {
         estado: form.estado || null,
         cidade: form.cidade || null,
         linkedin: form.linkedin || null,
+        instagram: form.instagram || null,
         area_interesse: form.area_interesse || null,
         cargo_interesse: vagaTitulo || null, // veio de vaga específica -> já mostra o cargo certo no card
         experiencia: form.trajetoria || null,
@@ -203,9 +205,22 @@ export default function TalentoForm() {
           </Field>
         </div>
 
-        <Field label="LinkedIn">
-          <input value={form.linkedin} onChange={set("linkedin")} className={inputClass} placeholder="linkedin.com/in/seu-perfil" />
-        </Field>
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="LinkedIn">
+            <input value={form.linkedin} onChange={set("linkedin")} className={inputClass} placeholder="linkedin.com/in/seu-perfil" />
+          </Field>
+          <Field label="Instagram">
+            <input
+              value={form.instagram}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/^@+/, "");
+                setForm((f) => ({ ...f, instagram: raw ? `@${raw}` : "" }));
+              }}
+              className={inputClass}
+              placeholder="@seuusuario"
+            />
+          </Field>
+        </div>
 
         <Field label="Área de interesse">
           <CustomSelect

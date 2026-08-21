@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import logo from "./assets/logo-grupo-silva.png";
 import { supabase } from "./supabaseClient";
+import { Eyebrow } from "./ui";
 
 type Vaga = {
   id: string;
@@ -33,7 +34,8 @@ export default function VagasPage() {
         <a href="/" className="text-xs text-neutral-500 hover:text-neutral-300">← Voltar</a>
         <div className="text-center space-y-2">
           <img src={logo} alt="Grupo Silva" className="h-10 mx-auto" />
-          <h1 className="text-2xl font-semibold text-white">Vagas Abertas</h1>
+          <Eyebrow>Grupo Silva</Eyebrow>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Vagas Abertas</h1>
           <p className="text-sm text-neutral-400">
             Confira as oportunidades disponíveis no Grupo Silva agora.
           </p>
@@ -55,13 +57,19 @@ export default function VagasPage() {
         ) : (
           <div className="space-y-3">
             {vagas.map((v) => (
-              <div key={v.id} className="bg-[#121212]/80 border border-white/10 rounded-2xl p-5 flex items-center justify-between gap-4">
-                <div>
+              <div key={v.id} className="bg-[#121212]/80 border border-white/10 rounded-2xl p-5 flex items-center justify-between gap-4 hover:border-brand/40 transition">
+                <div className="space-y-1.5 min-w-0">
                   <h2 className="text-white font-medium">{v.titulo}</h2>
-                  <p className="text-xs text-neutral-400">
-                    {v.setor || "Setor não informado"}
-                    {v.tipo_contrato && ` · ${v.tipo_contrato}`}
-                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    <span className="text-[11px] text-brand bg-brand/10 border border-brand/20 rounded-full px-2 py-0.5">
+                      {v.setor || "Setor não informado"}
+                    </span>
+                    {v.tipo_contrato && (
+                      <span className="text-[11px] text-neutral-400 bg-white/5 border border-white/10 rounded-full px-2 py-0.5">
+                        {v.tipo_contrato}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <a
                   href={`/talentos.html?area=${encodeURIComponent(v.setor || "")}&vaga_id=${encodeURIComponent(v.id)}&vaga_titulo=${encodeURIComponent(v.titulo)}`}

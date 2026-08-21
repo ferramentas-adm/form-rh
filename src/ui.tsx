@@ -17,6 +17,18 @@ export function Field({ label, hint, children }: { label: string; hint?: string;
   );
 }
 
+// Glow ambiente atrás do conteúdo -- referência (talentos.antoniodasilva.com.br) não
+// usa fundo chapado, tem um brilho quente atrás do hero. Fixed + pointer-events-none pra
+// não interferir em clique/scroll, blur pesado pra ficar suave.
+export function GlowBackground() {
+  return (
+    <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden -z-10">
+      <div className="absolute -top-40 -left-24 h-[36rem] w-[36rem] rounded-full bg-amber-500/20 blur-[130px]" />
+      <div className="absolute top-1/3 -right-32 h-[28rem] w-[28rem] rounded-full bg-brand/10 blur-[130px]" />
+    </div>
+  );
+}
+
 export function Eyebrow({ children }: { children: ReactNode }) {
   return <p className="text-xs font-semibold tracking-[0.2em] text-brand uppercase">{children}</p>;
 }

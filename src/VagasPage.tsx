@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import logo from "./assets/logo-grupo-silva.png";
 import { supabase } from "./supabaseClient";
-import { Eyebrow } from "./ui";
+import { GlowBackground } from "./ui";
 
 type Vaga = {
   id: string;
@@ -29,12 +29,12 @@ export default function VagasPage() {
   }, []);
 
   return (
-    <div className="min-h-screen px-6 py-12">
+    <div className="min-h-screen px-6 py-12 relative">
+      <GlowBackground />
       <div className="max-w-2xl mx-auto space-y-8">
         <a href="/" className="text-xs text-neutral-500 hover:text-neutral-300">← Voltar</a>
         <div className="text-center space-y-2">
           <img src={logo} alt="Grupo Silva" className="h-10 mx-auto" />
-          <Eyebrow>Grupo Silva</Eyebrow>
           <h1 className="text-2xl sm:text-3xl font-bold text-white">Vagas Abertas</h1>
           <p className="text-sm text-neutral-400">
             Confira as oportunidades disponíveis no Grupo Silva agora.

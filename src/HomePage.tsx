@@ -1,13 +1,13 @@
 import logo from "./assets/logo-grupo-silva.png";
-import { Eyebrow } from "./ui";
+import { GlowBackground } from "./ui";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
-      <div className="max-w-lg w-full bg-[#121212]/80 border border-white/10 rounded-3xl p-8 sm:p-10 space-y-7 text-center">
+    <div className="min-h-screen flex items-center justify-center p-6 relative">
+      <GlowBackground />
+      <div className="max-w-lg w-full bg-[#121212]/80 border border-white/10 rounded-3xl p-8 sm:p-10 space-y-7 text-center backdrop-blur-sm">
         <img src={logo} alt="Grupo Silva" className="h-10 mx-auto" />
         <div className="space-y-2">
-          <Eyebrow>Grupo Silva</Eyebrow>
           <h1 className="text-2xl sm:text-3xl font-bold text-white leading-tight">
             Carreiras no <span className="text-brand">Grupo Silva</span>
           </h1>

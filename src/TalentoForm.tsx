@@ -3,6 +3,7 @@ import logo from "./assets/logo-grupo-silva.png";
 import { supabase } from "./supabaseClient";
 import { maskTelefone } from "./masks";
 import { CustomSelect } from "./CustomSelect";
+import { GlowBackground } from "./ui";
 
 // Mesma lista de áreas usada em dh_setores no intranet — mantém consistência com o
 // que o RH já vê nos filtros do Banco de Talentos.
@@ -139,8 +140,9 @@ export default function TalentoForm() {
 
   if (done) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6">
-        <div className="max-w-lg w-full bg-[#121212]/80 border border-white/10 rounded-3xl p-10 text-center space-y-4">
+      <div className="min-h-screen flex items-center justify-center p-6 relative">
+        <GlowBackground />
+        <div className="max-w-lg w-full bg-[#121212]/80 border border-white/10 rounded-3xl p-10 text-center space-y-4 backdrop-blur-sm">
           <img src={logo} alt="Grupo Silva" className="h-10 mx-auto" />
           <h1 className="text-xl font-semibold text-white">Cadastro enviado! 🐢</h1>
           <p className="text-sm text-neutral-400">
@@ -154,10 +156,11 @@ export default function TalentoForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
+    <div className="min-h-screen flex items-center justify-center p-6 relative">
+      <GlowBackground />
       <form
         onSubmit={handleSubmit}
-        className="max-w-lg w-full bg-[#121212]/80 border border-white/10 rounded-3xl p-8 sm:p-10 space-y-5"
+        className="max-w-lg w-full bg-[#121212]/80 border border-white/10 rounded-3xl p-8 sm:p-10 space-y-5 backdrop-blur-sm"
       >
         <div className="space-y-2 mb-4">
           <a href="/" className="text-xs text-neutral-500 hover:text-neutral-300">← Voltar</a>

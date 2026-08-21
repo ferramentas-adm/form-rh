@@ -1,7 +1,7 @@
 import { useState } from "react";
 import logo from "./assets/logo-grupo-silva.png";
 import { maskCpf, maskCnpj, maskTelefone } from "./masks";
-import { Eyebrow, Bullet, TipBox, SectionLabel, Field, inputClass } from "./ui";
+import { Eyebrow, Bullet, TipBox, SectionLabel, Field, inputClass, GlowBackground } from "./ui";
 
 // URL da function pública que recebe esse form e grava em dh_ativacoes (fila "Aguardando RH").
 // Sem token embutido no front — endpoint é público de propósito, protegido por honeypot
@@ -96,8 +96,9 @@ export default function App() {
 
   if (done) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6">
-        <div className="max-w-lg w-full bg-[#121212]/80 border border-white/10 rounded-3xl p-10 text-center space-y-4">
+      <div className="min-h-screen flex items-center justify-center p-6 relative">
+        <GlowBackground />
+        <div className="max-w-lg w-full bg-[#121212]/80 border border-white/10 rounded-3xl p-10 text-center space-y-4 backdrop-blur-sm">
           <img src={logo} alt="Grupo Silva" className="h-10 mx-auto" />
           <h1 className="text-xl font-semibold text-white">Cadastro enviado! 🐢</h1>
           <p className="text-sm text-neutral-400">
@@ -110,10 +111,11 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
+    <div className="min-h-screen flex items-center justify-center p-6 relative">
+      <GlowBackground />
       <form
         onSubmit={handleSubmit}
-        className="max-w-xl w-full bg-[#121212]/80 border border-white/10 rounded-3xl p-8 sm:p-10 space-y-6"
+        className="max-w-xl w-full bg-[#121212]/80 border border-white/10 rounded-3xl p-8 sm:p-10 space-y-6 backdrop-blur-sm"
       >
         <div className="space-y-4">
           <img src={logo} alt="Grupo Silva" className="h-10" />

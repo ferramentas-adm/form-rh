@@ -3,7 +3,7 @@ import logo from "./assets/logo-grupo-silva.png";
 import { supabase } from "./supabaseClient";
 import { maskTelefone } from "./masks";
 import { CustomSelect } from "./CustomSelect";
-import { GlowBackground } from "./ui";
+import { GlowBackground, Eyebrow, Bullet, TipBox, SectionLabel, Field, inputClass } from "./ui";
 
 // Mesma lista de áreas usada em dh_setores no intranet — mantém consistência com o
 // que o RH já vê nos filtros do Banco de Talentos.
@@ -160,16 +160,38 @@ export default function TalentoForm() {
       <GlowBackground />
       <form
         onSubmit={handleSubmit}
-        className="max-w-lg w-full bg-[#121212]/80 border border-white/10 rounded-3xl p-8 sm:p-10 space-y-5 backdrop-blur-sm"
+        className="max-w-xl w-full bg-[#121212]/80 border border-white/10 rounded-3xl p-8 sm:p-10 space-y-6 backdrop-blur-sm"
       >
-        <div className="space-y-2 mb-4">
-          <a href="/" className="text-xs text-neutral-500 hover:text-neutral-300">← Voltar</a>
-          <img src={logo} alt="Grupo Silva" className="h-10" />
-          <h1 className="text-lg font-semibold text-white">Banco de Talentos - Grupo Silva</h1>
-          <p className="text-sm text-neutral-400">
-            Ainda não temos uma vaga aberta pra você? Deixe seu perfil registrado — quando surgir
-            uma oportunidade compatível, entramos em contato.
-          </p>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <img src={logo} alt="Grupo Silva" className="h-10" />
+            <a href="/" className="text-xs text-neutral-500 hover:text-neutral-300">← Voltar</a>
+          </div>
+          <div className="space-y-2">
+            <Eyebrow>Banco de Talentos</Eyebrow>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white leading-tight">
+              {vagaTitulo ? (
+                <>Candidatura pra <span className="text-brand">{vagaTitulo}</span></>
+              ) : (
+                <>Cadastre seu perfil no <span className="text-brand">Grupo Silva</span></>
+              )}
+            </h1>
+            <p className="text-sm text-neutral-400">
+              {vagaTitulo
+                ? "Preencha seus dados e concorra a essa vaga — se não rolar dessa vez, seu perfil já fica registrado pras próximas."
+                : "Ainda não temos uma vaga aberta pra você? Deixe seu perfil registrado — quando surgir uma oportunidade compatível, entramos em contato."}
+            </p>
+          </div>
+
+          <ul className="flex flex-wrap gap-x-5 gap-y-1.5">
+            <Bullet>Leva uns 3 minutos</Bullet>
+            <Bullet>100% gratuito</Bullet>
+            <Bullet>Empresas reais contratando</Bullet>
+          </ul>
+
+          <TipBox lead="Capriche nas respostas.">
+            Quanto mais completo o seu perfil — experiência, resultados e habilidades —, maiores as chances de sermos chamados pra uma vaga compatível.
+          </TipBox>
         </div>
 
         <input
@@ -182,87 +204,83 @@ export default function TalentoForm() {
           aria-hidden="true"
         />
 
-        <Field label="Nome Completo *">
-          <input required value={form.nome} onChange={set("nome")} className={inputClass} />
-        </Field>
+        <div className="space-y-4">
+          <SectionLabel>Sobre você</SectionLabel>
 
-        <div className="grid grid-cols-2 gap-4">
-          <Field label="Telefone para contato *">
-            <input required value={form.telefone} onChange={(e) => setForm((f) => ({ ...f, telefone: maskTelefone(e.target.value) }))} className={inputClass} placeholder="(00) 00000-0000" />
+          <Field label="Nome Completo *">
+            <input required value={form.nome} onChange={set("nome")} className={inputClass} />
           </Field>
-          <Field label="E-mail para contato *">
-            <input type="email" required value={form.email} onChange={set("email")} className={inputClass} />
-          </Field>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Telefone para contato *">
+              <input required value={form.telefone} onChange={(e) => setForm((f) => ({ ...f, telefone: maskTelefone(e.target.value) }))} className={inputClass} placeholder="(00) 00000-0000" />
+            </Field>
+            <Field label="E-mail para contato *">
+              <input type="email" required value={form.email} onChange={set("email")} className={inputClass} />
+            </Field>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Estado *">
+              <CustomSelect
+                value={form.estado}
+                onChange={(v) => setForm((f) => ({ ...f, estado: v }))}
+                options={UFS}
+              />
+            </Field>
+            <Field label="Cidade *">
+              <input required value={form.cidade} onChange={set("cidade")} className={inputClass} />
+            </Field>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="LinkedIn">
+              <input value={form.linkedin} onChange={set("linkedin")} className={inputClass} placeholder="linkedin.com/in/seu-perfil" />
+            </Field>
+            <Field label="Instagram">
+              <input
+                value={form.instagram}
+                onChange={(e) => {
+                  const raw = e.target.value.replace(/^@+/, "");
+                  setForm((f) => ({ ...f, instagram: raw ? `@${raw}` : "" }));
+                }}
+                className={inputClass}
+                placeholder="@seuusuario"
+              />
+            </Field>
+          </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <Field label="Estado *">
+        <div className="space-y-4">
+          <SectionLabel>Sua candidatura</SectionLabel>
+
+          <Field label="Área de interesse">
             <CustomSelect
-              value={form.estado}
-              onChange={(v) => setForm((f) => ({ ...f, estado: v }))}
-              options={UFS}
+              value={form.area_interesse}
+              onChange={(v) => setForm((f) => ({ ...f, area_interesse: v }))}
+              options={AREAS}
             />
           </Field>
-          <Field label="Cidade *">
-            <input required value={form.cidade} onChange={set("cidade")} className={inputClass} />
+
+          <Field label="Nos conte um resumo da sua trajetória profissional">
+            <textarea rows={4} value={form.trajetoria} onChange={set("trajetoria")} className={inputClass} />
+          </Field>
+
+          <Field label={`Anexo do currículo (máx. ${MAX_FILE_MB}MB)`}>
+            <input type="file" accept=".pdf,.doc,.docx" onChange={handleFile} className={`${inputClass} file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-brand file:text-black file:text-xs file:font-semibold`} />
           </Field>
         </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <Field label="LinkedIn">
-            <input value={form.linkedin} onChange={set("linkedin")} className={inputClass} placeholder="linkedin.com/in/seu-perfil" />
-          </Field>
-          <Field label="Instagram">
-            <input
-              value={form.instagram}
-              onChange={(e) => {
-                const raw = e.target.value.replace(/^@+/, "");
-                setForm((f) => ({ ...f, instagram: raw ? `@${raw}` : "" }));
-              }}
-              className={inputClass}
-              placeholder="@seuusuario"
-            />
-          </Field>
-        </div>
-
-        <Field label="Área de interesse">
-          <CustomSelect
-            value={form.area_interesse}
-            onChange={(v) => setForm((f) => ({ ...f, area_interesse: v }))}
-            options={AREAS}
-          />
-        </Field>
-
-        <Field label="Nos conte um resumo da sua trajetória profissional">
-          <textarea rows={4} value={form.trajetoria} onChange={set("trajetoria")} className={inputClass} />
-        </Field>
-
-        <Field label={`Anexo do currículo (máx. ${MAX_FILE_MB}MB)`}>
-          <input type="file" accept=".pdf,.doc,.docx" onChange={handleFile} className={`${inputClass} file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-brand file:text-black file:text-xs file:font-semibold`} />
-        </Field>
 
         {error && <p className="text-sm text-red-400">{error}</p>}
 
         <button
           type="submit"
           disabled={submitting}
-          className="w-full bg-brand text-black font-semibold rounded-xl py-3 hover:brightness-110 transition disabled:opacity-60"
+          className="w-full bg-brand text-black font-semibold rounded-xl py-3.5 hover:brightness-110 transition disabled:opacity-60"
         >
           {submitting ? "Enviando..." : "Enviar cadastro"}
         </button>
       </form>
     </div>
-  );
-}
-
-const inputClass =
-  "w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:ring-1 focus:ring-brand";
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <label className="block space-y-1">
-      <span className="text-xs text-neutral-400">{label}</span>
-      {children}
-    </label>
   );
 }

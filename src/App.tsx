@@ -20,6 +20,12 @@ type FormState = {
   email_pessoal: string;
   telefone: string;
   rede_social: string;
+  contato_emergencia: string;
+  convenio_medico: string;
+  alergias: string;
+  medicacao_uso_continuo: string;
+  problemas_saude: string;
+  tipo_sanguineo: string;
   website: string; // honeypot — deve ficar sempre vazio
 };
 
@@ -33,6 +39,12 @@ const emptyForm: FormState = {
   email_pessoal: "",
   telefone: "",
   rede_social: "",
+  contato_emergencia: "",
+  convenio_medico: "",
+  alergias: "",
+  medicacao_uso_continuo: "",
+  problemas_saude: "",
+  tipo_sanguineo: "",
   website: "",
 };
 
@@ -42,7 +54,7 @@ export default function App() {
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const set = (field: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement>) =>
+  const set = (field: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm((f) => ({ ...f, [field]: e.target.value }));
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -82,6 +94,12 @@ export default function App() {
           pix: form.pix,
           rede_social: form.rede_social,
           data_inicio_prevista: form.data_inicio_prevista,
+          contato_emergencia: form.contato_emergencia.trim(),
+          convenio_medico: form.convenio_medico.trim(),
+          alergias: form.alergias.trim(),
+          medicacao_uso_continuo: form.medicacao_uso_continuo.trim(),
+          problemas_saude: form.problemas_saude.trim(),
+          tipo_sanguineo: form.tipo_sanguineo,
         }),
       });
       const json = await res.json().catch(() => ({}));
@@ -198,6 +216,40 @@ export default function App() {
 
           <Field label="Disponibilidade para data de início *">
             <input type="date" required value={form.data_inicio_prevista} onChange={set("data_inicio_prevista")} className={inputClass} />
+          </Field>
+        </div>
+
+        <div className="space-y-4">
+          <SectionLabel>Informações adicionais</SectionLabel>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Contato de emergência">
+              <input value={form.contato_emergencia} onChange={set("contato_emergencia")} className={inputClass} placeholder="Nome e telefone" />
+            </Field>
+            <Field label="Tipo sanguíneo">
+              <select value={form.tipo_sanguineo} onChange={set("tipo_sanguineo")} className={inputClass}>
+                <option value="">Selecione (se souber)</option>
+                {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map((t) => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+            </Field>
+          </div>
+
+          <Field label="Possui convênio médico? Qual?">
+            <input value={form.convenio_medico} onChange={set("convenio_medico")} className={inputClass} placeholder="Deixe em branco se não possui" />
+          </Field>
+
+          <Field label="Possui algum tipo de alergia?">
+            <input value={form.alergias} onChange={set("alergias")} className={inputClass} placeholder="Deixe em branco se não possui" />
+          </Field>
+
+          <Field label="Toma algum tipo de medicação?">
+            <input value={form.medicacao_uso_continuo} onChange={set("medicacao_uso_continuo")} className={inputClass} placeholder="Deixe em branco se não toma" />
+          </Field>
+
+          <Field label="Problemas de saúde">
+            <input value={form.problemas_saude} onChange={set("problemas_saude")} className={inputClass} placeholder="Deixe em branco se não possui" />
           </Field>
         </div>
 

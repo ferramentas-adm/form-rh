@@ -10,7 +10,7 @@ export const inputClass =
 export function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
   return (
     <label className="block space-y-1">
-      <span className="text-xs text-neutral-400">{label}</span>
+      <span className="text-xs text-white">{label}</span>
       {children}
       {hint && <p className="text-[11px] text-amber-400/80 mt-1">{hint}</p>}
     </label>
@@ -58,7 +58,7 @@ export function TipBox({ lead, children }: { lead: string; children: ReactNode }
 export function SectionLabel({ children }: { children: ReactNode }) {
   return (
     <div className="flex items-center gap-3 pt-2">
-      <span className="text-[11px] font-semibold tracking-[0.2em] text-neutral-500 uppercase whitespace-nowrap">{children}</span>
+      <span className="text-[11px] font-semibold tracking-[0.2em] text-white uppercase whitespace-nowrap">{children}</span>
       <span className="h-px flex-1 bg-white/10" />
     </div>
   );

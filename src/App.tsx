@@ -23,10 +23,14 @@ type FormState = {
   contato_emergencia_nome: string;
   contato_emergencia_telefone: string;
   contato_emergencia_parentesco: string;
-  convenio_medico: string;
-  alergias: string;
-  medicacao_uso_continuo: string;
-  problemas_saude: string;
+  possui_convenio_medico: boolean;
+  convenio_medico_qual: string;
+  possui_alergia: boolean;
+  alergia_qual: string;
+  possui_medicacao: boolean;
+  medicacao_qual: string;
+  possui_problema_saude: boolean;
+  problema_saude_qual: string;
   tipo_sanguineo: string;
   website: string; // honeypot — deve ficar sempre vazio
 };
@@ -44,13 +48,41 @@ const emptyForm: FormState = {
   contato_emergencia_nome: "",
   contato_emergencia_telefone: "",
   contato_emergencia_parentesco: "",
-  convenio_medico: "",
-  alergias: "",
-  medicacao_uso_continuo: "",
-  problemas_saude: "",
+  possui_convenio_medico: false,
+  convenio_medico_qual: "",
+  possui_alergia: false,
+  alergia_qual: "",
+  possui_medicacao: false,
+  medicacao_qual: "",
+  possui_problema_saude: false,
+  problema_saude_qual: "",
   tipo_sanguineo: "",
   website: "",
 };
+
+// Sim/Não + campo "Qual?" que só aparece quando Sim -- evita ambiguidade de campo vazio
+// (não preencheu vs não tem) que o texto livre tinha antes.
+function SimNaoField({ label, possui, qual, onPossuiChange, onQualChange, qualPlaceholder }: {
+  label: string; possui: boolean; qual: string;
+  onPossuiChange: (v: boolean) => void; onQualChange: (v: string) => void;
+  qualPlaceholder?: string;
+}) {
+  return (
+    <div className="space-y-3">
+      <Field label={label}>
+        <select value={possui ? "sim" : "nao"} onChange={(e) => onPossuiChange(e.target.value === "sim")} className={inputClass}>
+          <option value="nao">Não</option>
+          <option value="sim">Sim</option>
+        </select>
+      </Field>
+      {possui && (
+        <Field label="Qual?">
+          <input value={qual} onChange={(e) => onQualChange(e.target.value)} className={inputClass} placeholder={qualPlaceholder} />
+        </Field>
+      )}
+    </div>
+  );
+}
 
 export default function App() {
   const [form, setForm] = useState<FormState>({ ...emptyForm });
@@ -101,10 +133,14 @@ export default function App() {
           contato_emergencia_nome: form.contato_emergencia_nome.trim(),
           contato_emergencia_telefone: form.contato_emergencia_telefone,
           contato_emergencia_parentesco: form.contato_emergencia_parentesco.trim(),
-          convenio_medico: form.convenio_medico.trim(),
-          alergias: form.alergias.trim(),
-          medicacao_uso_continuo: form.medicacao_uso_continuo.trim(),
-          problemas_saude: form.problemas_saude.trim(),
+          possui_convenio_medico: form.possui_convenio_medico,
+          convenio_medico_qual: form.possui_convenio_medico ? form.convenio_medico_qual.trim() : "",
+          possui_alergia: form.possui_alergia,
+          alergia_qual: form.possui_alergia ? form.alergia_qual.trim() : "",
+          possui_medicacao: form.possui_medicacao,
+          medicacao_qual: form.possui_medicacao ? form.medicacao_qual.trim() : "",
+          possui_problema_saude: form.possui_problema_saude,
+          problema_saude_qual: form.possui_problema_saude ? form.problema_saude_qual.trim() : "",
           tipo_sanguineo: form.tipo_sanguineo,
         }),
       });
@@ -250,21 +286,41 @@ export default function App() {
             </select>
           </Field>
 
-          <Field label="Possui convênio médico? Qual?">
-            <input value={form.convenio_medico} onChange={set("convenio_medico")} className={inputClass} placeholder="Deixe em branco se não possui" />
-          </Field>
+          <SimNaoField
+            label="Possui convênio médico?"
+            possui={form.possui_convenio_medico}
+            qual={form.convenio_medico_qual}
+            onPossuiChange={(v) => setForm((f) => ({ ...f, possui_convenio_medico: v, convenio_medico_qual: v ? f.convenio_medico_qual : "" }))}
+            onQualChange={(v) => setForm((f) => ({ ...f, convenio_medico_qual: v }))}
+            qualPlaceholder="Qual convênio?"
+          />
 
-          <Field label="Possui algum tipo de alergia?">
-            <input value={form.alergias} onChange={set("alergias")} className={inputClass} placeholder="Deixe em branco se não possui" />
-          </Field>
+          <SimNaoField
+            label="Possui algum tipo de alergia?"
+            possui={form.possui_alergia}
+            qual={form.alergia_qual}
+            onPossuiChange={(v) => setForm((f) => ({ ...f, possui_alergia: v, alergia_qual: v ? f.alergia_qual : "" }))}
+            onQualChange={(v) => setForm((f) => ({ ...f, alergia_qual: v }))}
+            qualPlaceholder="Qual alergia?"
+          />
 
-          <Field label="Toma algum tipo de medicação?">
-            <input value={form.medicacao_uso_continuo} onChange={set("medicacao_uso_continuo")} className={inputClass} placeholder="Deixe em branco se não toma" />
-          </Field>
+          <SimNaoField
+            label="Toma algum tipo de medicação?"
+            possui={form.possui_medicacao}
+            qual={form.medicacao_qual}
+            onPossuiChange={(v) => setForm((f) => ({ ...f, possui_medicacao: v, medicacao_qual: v ? f.medicacao_qual : "" }))}
+            onQualChange={(v) => setForm((f) => ({ ...f, medicacao_qual: v }))}
+            qualPlaceholder="Qual medicação?"
+          />
 
-          <Field label="Problemas de saúde">
-            <input value={form.problemas_saude} onChange={set("problemas_saude")} className={inputClass} placeholder="Deixe em branco se não possui" />
-          </Field>
+          <SimNaoField
+            label="Possui algum problema de saúde?"
+            possui={form.possui_problema_saude}
+            qual={form.problema_saude_qual}
+            onPossuiChange={(v) => setForm((f) => ({ ...f, possui_problema_saude: v, problema_saude_qual: v ? f.problema_saude_qual : "" }))}
+            onQualChange={(v) => setForm((f) => ({ ...f, problema_saude_qual: v }))}
+            qualPlaceholder="Qual problema?"
+          />
         </div>
 
         {error && <p className="text-sm text-red-400">{error}</p>}

@@ -70,10 +70,22 @@ function SimNaoField({ label, possui, qual, onPossuiChange, onQualChange, qualPl
   return (
     <div className="space-y-3">
       <Field label={label}>
-        <select value={possui ? "sim" : "nao"} onChange={(e) => onPossuiChange(e.target.value === "sim")} className={inputClass}>
-          <option value="nao">Não</option>
-          <option value="sim">Sim</option>
-        </select>
+        <div className="flex rounded-lg border border-white/10 bg-black/40 p-1 gap-1">
+          <button
+            type="button"
+            onClick={() => onPossuiChange(false)}
+            className={`flex-1 rounded-md py-1.5 text-sm font-medium transition ${!possui ? "bg-brand text-black" : "text-neutral-400 hover:text-white"}`}
+          >
+            Não
+          </button>
+          <button
+            type="button"
+            onClick={() => onPossuiChange(true)}
+            className={`flex-1 rounded-md py-1.5 text-sm font-medium transition ${possui ? "bg-brand text-black" : "text-neutral-400 hover:text-white"}`}
+          >
+            Sim
+          </button>
+        </div>
       </Field>
       {possui && (
         <Field label="Qual?">

@@ -20,7 +20,9 @@ type FormState = {
   email_pessoal: string;
   telefone: string;
   rede_social: string;
-  contato_emergencia: string;
+  contato_emergencia_nome: string;
+  contato_emergencia_telefone: string;
+  contato_emergencia_parentesco: string;
   convenio_medico: string;
   alergias: string;
   medicacao_uso_continuo: string;
@@ -39,7 +41,9 @@ const emptyForm: FormState = {
   email_pessoal: "",
   telefone: "",
   rede_social: "",
-  contato_emergencia: "",
+  contato_emergencia_nome: "",
+  contato_emergencia_telefone: "",
+  contato_emergencia_parentesco: "",
   convenio_medico: "",
   alergias: "",
   medicacao_uso_continuo: "",
@@ -94,7 +98,9 @@ export default function App() {
           pix: form.pix,
           rede_social: form.rede_social,
           data_inicio_prevista: form.data_inicio_prevista,
-          contato_emergencia: form.contato_emergencia.trim(),
+          contato_emergencia_nome: form.contato_emergencia_nome.trim(),
+          contato_emergencia_telefone: form.contato_emergencia_telefone,
+          contato_emergencia_parentesco: form.contato_emergencia_parentesco.trim(),
           convenio_medico: form.convenio_medico.trim(),
           alergias: form.alergias.trim(),
           medicacao_uso_continuo: form.medicacao_uso_continuo.trim(),
@@ -222,19 +228,27 @@ export default function App() {
         <div className="space-y-4">
           <SectionLabel>Informações adicionais</SectionLabel>
 
+          <Field label="Contato de emergência — Nome">
+            <input value={form.contato_emergencia_nome} onChange={set("contato_emergencia_nome")} className={inputClass} />
+          </Field>
+
           <div className="grid grid-cols-2 gap-4">
-            <Field label="Contato de emergência">
-              <input value={form.contato_emergencia} onChange={set("contato_emergencia")} className={inputClass} placeholder="Nome e telefone" />
+            <Field label="Contato de emergência — Telefone">
+              <input value={form.contato_emergencia_telefone} onChange={(e) => setForm((f) => ({ ...f, contato_emergencia_telefone: maskTelefone(e.target.value) }))} className={inputClass} placeholder="(00) 00000-0000" />
             </Field>
-            <Field label="Tipo sanguíneo">
-              <select value={form.tipo_sanguineo} onChange={set("tipo_sanguineo")} className={inputClass}>
-                <option value="">Selecione (se souber)</option>
-                {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map((t) => (
-                  <option key={t} value={t}>{t}</option>
-                ))}
-              </select>
+            <Field label="Contato de emergência — Parentesco">
+              <input value={form.contato_emergencia_parentesco} onChange={set("contato_emergencia_parentesco")} className={inputClass} placeholder="Ex: mãe, cônjuge, irmão" />
             </Field>
           </div>
+
+          <Field label="Tipo sanguíneo">
+            <select value={form.tipo_sanguineo} onChange={set("tipo_sanguineo")} className={inputClass}>
+              <option value="">Selecione (se souber)</option>
+              {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map((t) => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
+          </Field>
 
           <Field label="Possui convênio médico? Qual?">
             <input value={form.convenio_medico} onChange={set("convenio_medico")} className={inputClass} placeholder="Deixe em branco se não possui" />

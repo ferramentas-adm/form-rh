@@ -2,6 +2,7 @@ import { useState } from "react";
 import logo from "./assets/logo-grupo-silva.png";
 import { maskCpf, maskCnpj, maskTelefone } from "./masks";
 import { Eyebrow, Bullet, TipBox, SectionLabel, Field, inputClass, GlowBackground } from "./ui";
+import { CustomSelect } from "./CustomSelect";
 
 // URL da function pública que recebe esse form e grava em dh_ativacoes (fila "Aguardando RH").
 // Sem token embutido no front — endpoint é público de propósito, protegido por honeypot
@@ -61,31 +62,6 @@ const emptyForm: FormState = {
 };
 
 const TIPOS_SANGUINEOS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
-
-// Grid de botões em vez de <select> nativo (mesmo motivo do SimNaoField) -- clicar de novo
-// no já selecionado desmarca, já que o campo é opcional ("se souber").
-function TipoSanguineoField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  return (
-    <Field label="Tipo sanguíneo (se souber)">
-      <div className="grid grid-cols-4 gap-1.5">
-        {TIPOS_SANGUINEOS.map((t) => (
-          <button
-            key={t}
-            type="button"
-            onClick={() => onChange(value === t ? "" : t)}
-            className={`rounded-lg border py-2 text-sm font-medium transition ${
-              value === t
-                ? "border-brand bg-brand text-black"
-                : "border-white/10 bg-black/40 text-neutral-300 hover:border-white/30"
-            }`}
-          >
-            {t}
-          </button>
-        ))}
-      </div>
-    </Field>
-  );
-}
 
 // Sim/Não + campo "Qual?" que só aparece quando Sim -- evita ambiguidade de campo vazio
 // (não preencheu vs não tem) que o texto livre tinha antes.
@@ -316,7 +292,14 @@ export default function App() {
             </Field>
           </div>
 
-          <TipoSanguineoField value={form.tipo_sanguineo} onChange={(v) => setForm((f) => ({ ...f, tipo_sanguineo: v }))} />
+          <Field label="Tipo sanguíneo">
+            <CustomSelect
+              value={form.tipo_sanguineo}
+              onChange={(v) => setForm((f) => ({ ...f, tipo_sanguineo: v }))}
+              options={TIPOS_SANGUINEOS}
+              placeholder="Selecione (se souber)"
+            />
+          </Field>
 
           <SimNaoField
             label="Possui convênio médico?"

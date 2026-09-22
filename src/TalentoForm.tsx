@@ -1,6 +1,6 @@
 import { useState } from "react";
 import logo from "./assets/logo-grupo-silva.png";
-import { supabase } from "./supabaseClient";
+import { supabase, supabaseOracle } from "./supabaseClient";
 import { maskTelefone } from "./masks";
 import { CustomSelect } from "./CustomSelect";
 import { GlowBackground, Eyebrow, Bullet, TipBox, SectionLabel, Field, inputClass } from "./ui";
@@ -129,6 +129,25 @@ export default function TalentoForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...registro, created_at: new Date().toISOString() }),
       }).catch(() => {});
+
+      // Espelha cadastro + currículo pro backend self-hosted na Oracle, em paralelo
+      // ao Lovable acima -- best-effort, não bloqueia nem falha o form por causa
+      // dela (Oracle ainda não é a fonte de verdade, é só pra manter os dois
+      // bancos sincronizados enquanto a migração não vira definitiva).
+      (async () => {
+        try {
+          if (arquivo && portfolioUrl) {
+            const { error: uploadErrorOracle } = await supabaseOracle.storage
+              .from("curriculos-banco-talentos")
+              .upload(portfolioUrl, arquivo, { contentType: arquivo.type || undefined });
+            if (uploadErrorOracle) throw uploadErrorOracle;
+          }
+          const { error: insertErrorOracle } = await supabaseOracle.from("banco_talentos").insert(registro);
+          if (insertErrorOracle) throw insertErrorOracle;
+        } catch (e) {
+          console.warn("Envio espelhado pra Oracle falhou:", e);
+        }
+      })();
 
       setDone(true);
     } catch (err) {

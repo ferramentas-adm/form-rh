@@ -11,6 +11,14 @@ const INTAKE_URL =
   import.meta.env.VITE_INTAKE_URL ||
   "https://vxwjgumjkmtbvywdewhj.supabase.co/functions/v1/activation-form-public";
 
+// Envio espelhado pro backend self-hosted na Oracle, em paralelo ao Lovable acima --
+// Oracle ainda não é produção, então esse envio é best-effort (não bloqueia nem
+// falha o form se der erro, só loga no console). Assim que Oracle virar produção
+// de fato, troca INTAKE_URL pra apontar pra cá e remove esse envio duplicado.
+const ORACLE_INTAKE_URL =
+  import.meta.env.VITE_ORACLE_INTAKE_URL ||
+  "https://api.204.216.147.185.nip.io/functions/v1/activation-form-public";
+
 type FormState = {
   data_inicio_prevista: string;
   nome: string;
@@ -132,32 +140,43 @@ export default function App() {
 
     setSubmitting(true);
     try {
+      const payload = JSON.stringify({
+        nome: form.nome.trim(),
+        cpf: form.cpf,
+        cnpj: form.cnpj,
+        telefone: form.telefone,
+        email_pessoal: form.email_pessoal,
+        data_nascimento: form.data_nascimento,
+        pix: form.pix,
+        rede_social: form.rede_social,
+        data_inicio_prevista: form.data_inicio_prevista,
+        contato_emergencia_nome: form.contato_emergencia_nome.trim(),
+        contato_emergencia_telefone: form.contato_emergencia_telefone,
+        contato_emergencia_parentesco: form.contato_emergencia_parentesco.trim(),
+        possui_convenio_medico: form.possui_convenio_medico,
+        convenio_medico_qual: form.possui_convenio_medico ? form.convenio_medico_qual.trim() : "",
+        possui_alergia: form.possui_alergia,
+        alergia_qual: form.possui_alergia ? form.alergia_qual.trim() : "",
+        possui_medicacao: form.possui_medicacao,
+        medicacao_qual: form.possui_medicacao ? form.medicacao_qual.trim() : "",
+        possui_problema_saude: form.possui_problema_saude,
+        problema_saude_qual: form.possui_problema_saude ? form.problema_saude_qual.trim() : "",
+        tipo_sanguineo: form.tipo_sanguineo,
+      });
+
+      // Espelha pra Oracle em paralelo, sem bloquear nem falhar o form por causa
+      // dela -- Oracle ainda não é a fonte de verdade, é só pra manter os dois
+      // bancos sincronizados enquanto a migração não vira definitiva.
+      fetch(ORACLE_INTAKE_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).catch((e) => console.warn("Envio espelhado pra Oracle falhou:", e));
+
       const res = await fetch(INTAKE_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nome: form.nome.trim(),
-          cpf: form.cpf,
-          cnpj: form.cnpj,
-          telefone: form.telefone,
-          email_pessoal: form.email_pessoal,
-          data_nascimento: form.data_nascimento,
-          pix: form.pix,
-          rede_social: form.rede_social,
-          data_inicio_prevista: form.data_inicio_prevista,
-          contato_emergencia_nome: form.contato_emergencia_nome.trim(),
-          contato_emergencia_telefone: form.contato_emergencia_telefone,
-          contato_emergencia_parentesco: form.contato_emergencia_parentesco.trim(),
-          possui_convenio_medico: form.possui_convenio_medico,
-          convenio_medico_qual: form.possui_convenio_medico ? form.convenio_medico_qual.trim() : "",
-          possui_alergia: form.possui_alergia,
-          alergia_qual: form.possui_alergia ? form.alergia_qual.trim() : "",
-          possui_medicacao: form.possui_medicacao,
-          medicacao_qual: form.possui_medicacao ? form.medicacao_qual.trim() : "",
-          possui_problema_saude: form.possui_problema_saude,
-          problema_saude_qual: form.possui_problema_saude ? form.problema_saude_qual.trim() : "",
-          tipo_sanguineo: form.tipo_sanguineo,
-        }),
+        body: payload,
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json?.error || "Falha ao enviar. Tente novamente.");

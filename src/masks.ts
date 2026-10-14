@@ -13,6 +13,11 @@ export function maskCnpj(v: string): string {
     .replace(/(\d{4})(\d{1,2})$/, "$1-$2");
 }
 
+export function maskCep(v: string): string {
+  return v.replace(/\D/g, "").slice(0, 8)
+    .replace(/(\d{5})(\d)/, "$1-$2");
+}
+
 export function maskTelefone(v: string): string {
   const d = v.replace(/\D/g, "").slice(0, 11);
   if (d.length <= 10) {

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import logo from "./assets/logo-grupo-silva.png";
-import { maskCpf, maskCnpj, maskTelefone } from "./masks";
+import { maskCpf, maskCnpj, maskTelefone, maskCep } from "./masks";
 import { Eyebrow, Bullet, TipBox, SectionLabel, Field, inputClass, GlowBackground } from "./ui";
 import { CustomSelect } from "./CustomSelect";
 
@@ -29,6 +29,16 @@ type FormState = {
   email_pessoal: string;
   telefone: string;
   rede_social: string;
+  nacionalidade: string;
+  rg: string;
+  estado_civil: string;
+  cep: string;
+  endereco: string;
+  numero: string;
+  complemento: string;
+  bairro: string;
+  cidade: string;
+  estado: string;
   contato_emergencia_nome: string;
   contato_emergencia_telefone: string;
   contato_emergencia_parentesco: string;
@@ -54,6 +64,16 @@ const emptyForm: FormState = {
   email_pessoal: "",
   telefone: "",
   rede_social: "",
+  nacionalidade: "",
+  rg: "",
+  estado_civil: "",
+  cep: "",
+  endereco: "",
+  numero: "",
+  complemento: "",
+  bairro: "",
+  cidade: "",
+  estado: "",
   contato_emergencia_nome: "",
   contato_emergencia_telefone: "",
   contato_emergencia_parentesco: "",
@@ -70,6 +90,14 @@ const emptyForm: FormState = {
 };
 
 const TIPOS_SANGUINEOS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+
+const ESTADOS_CIVIS = ["Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viúvo(a)", "União Estável"];
+
+// Mesma lista de UFs usada no form de Talentos.
+const UFS = [
+  "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG",
+  "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO",
+];
 
 // Sim/Não + campo "Qual?" que só aparece quando Sim -- evita ambiguidade de campo vazio
 // (não preencheu vs não tem) que o texto livre tinha antes.
@@ -123,8 +151,10 @@ export default function App() {
     if (form.website) return; // bot caiu no honeypot — finge sucesso silenciosamente
     if (!form.data_inicio_prevista || !form.nome.trim() || !form.cpf || !form.cnpj
       || !form.data_nascimento || !form.pix.trim() || !form.email_pessoal
-      || !form.telefone || !form.rede_social.trim()) {
-      setError("Preencha todos os campos, todos são obrigatórios.");
+      || !form.telefone || !form.rede_social.trim() || !form.nacionalidade.trim()
+      || !form.rg.trim() || !form.estado_civil || !form.cep || !form.endereco.trim()
+      || !form.numero.trim() || !form.bairro.trim() || !form.cidade.trim() || !form.estado) {
+      setError("Preencha todos os campos, todos são obrigatórios (complemento é opcional).");
       return;
     }
     // CPF/CNPJ com dígito faltando (ex: usuário parou de digitar no meio) não são pegos
@@ -150,6 +180,16 @@ export default function App() {
         pix: form.pix,
         rede_social: form.rede_social,
         data_inicio_prevista: form.data_inicio_prevista,
+        nacionalidade: form.nacionalidade.trim(),
+        rg: form.rg.trim(),
+        estado_civil: form.estado_civil,
+        cep: form.cep,
+        endereco: form.endereco.trim(),
+        numero: form.numero.trim(),
+        complemento: form.complemento.trim(),
+        bairro: form.bairro.trim(),
+        cidade: form.cidade.trim(),
+        estado: form.estado,
         contato_emergencia_nome: form.contato_emergencia_nome.trim(),
         contato_emergencia_telefone: form.contato_emergencia_telefone,
         contato_emergencia_parentesco: form.contato_emergencia_parentesco.trim(),
@@ -293,6 +333,62 @@ export default function App() {
           <Field label="Disponibilidade para data de início *">
             <input type="date" required value={form.data_inicio_prevista} onChange={set("data_inicio_prevista")} className={inputClass} />
           </Field>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Nacionalidade *">
+              <input required value={form.nacionalidade} onChange={set("nacionalidade")} className={inputClass} placeholder="Brasileira" />
+            </Field>
+            <Field label="RG *">
+              <input required value={form.rg} onChange={set("rg")} className={inputClass} />
+            </Field>
+          </div>
+
+          <Field label="Estado Civil *">
+            <CustomSelect
+              value={form.estado_civil}
+              onChange={(v) => setForm((f) => ({ ...f, estado_civil: v }))}
+              options={ESTADOS_CIVIS}
+            />
+          </Field>
+        </div>
+
+        <div className="space-y-4">
+          <SectionLabel>Endereço</SectionLabel>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="CEP *">
+              <input required value={form.cep} onChange={(e) => setForm((f) => ({ ...f, cep: maskCep(e.target.value) }))} className={inputClass} placeholder="00000-000" />
+            </Field>
+            <Field label="Cidade *">
+              <input required value={form.cidade} onChange={set("cidade")} className={inputClass} />
+            </Field>
+          </div>
+
+          <Field label="Endereço (logradouro) *">
+            <input required value={form.endereco} onChange={set("endereco")} className={inputClass} />
+          </Field>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Número *">
+              <input required value={form.numero} onChange={set("numero")} className={inputClass} />
+            </Field>
+            <Field label="Complemento">
+              <input value={form.complemento} onChange={set("complemento")} className={inputClass} placeholder="Apto, bloco, etc." />
+            </Field>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Bairro *">
+              <input required value={form.bairro} onChange={set("bairro")} className={inputClass} />
+            </Field>
+            <Field label="Estado (UF) *">
+              <CustomSelect
+                value={form.estado}
+                onChange={(v) => setForm((f) => ({ ...f, estado: v }))}
+                options={UFS}
+              />
+            </Field>
+          </div>
         </div>
 
         <div className="space-y-4">

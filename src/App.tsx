@@ -7,17 +7,11 @@ import { CustomSelect } from "./CustomSelect";
 // URL da function pública que recebe esse form e grava em dh_ativacoes (fila "Aguardando RH").
 // Sem token embutido no front — endpoint é público de propósito, protegido por honeypot
 // (campo "website" abaixo, invisível pra humano) + CORS restrito ao domínio de produção.
+// Supabase Cloud (projeto `intranet`, única produção desde 07/11/2026). O envio espelhado
+// pro Lovable e pra Oracle foi removido: os dois ambientes não recebem mais dado.
 const INTAKE_URL =
   import.meta.env.VITE_INTAKE_URL ||
-  "https://vxwjgumjkmtbvywdewhj.supabase.co/functions/v1/activation-form-public";
-
-// Envio espelhado pro backend self-hosted na Oracle, em paralelo ao Lovable acima --
-// Oracle ainda não é produção, então esse envio é best-effort (não bloqueia nem
-// falha o form se der erro, só loga no console). Assim que Oracle virar produção
-// de fato, troca INTAKE_URL pra apontar pra cá e remove esse envio duplicado.
-const ORACLE_INTAKE_URL =
-  import.meta.env.VITE_ORACLE_INTAKE_URL ||
-  "https://api.204.216.147.185.nip.io/functions/v1/activation-form-public";
+  "https://hnyyfhnobrqpdvshzlwf.supabase.co/functions/v1/activation-form-public";
 
 type FormState = {
   data_inicio_prevista: string;
@@ -203,15 +197,6 @@ export default function App() {
         problema_saude_qual: form.possui_problema_saude ? form.problema_saude_qual.trim() : "",
         tipo_sanguineo: form.tipo_sanguineo,
       });
-
-      // Espelha pra Oracle em paralelo, sem bloquear nem falhar o form por causa
-      // dela -- Oracle ainda não é a fonte de verdade, é só pra manter os dois
-      // bancos sincronizados enquanto a migração não vira definitiva.
-      fetch(ORACLE_INTAKE_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: payload,
-      }).catch((e) => console.warn("Envio espelhado pra Oracle falhou:", e));
 
       const res = await fetch(INTAKE_URL, {
         method: "POST",
